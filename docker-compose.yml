@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  api:
+    image: node:12.13-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    depends_on: 
+      - mysql
+    command: sh -c "yarn && yarn dev:server"
+  mysql:
+    image: mysql:5.6
+    environment: 
+      MYSQL_DATABASE: goomer
+      MYSQL_USER: dev
+      MYSQL_ROOT_PASSWORD: passwd 
+    ports:
+      - 3306:3306
