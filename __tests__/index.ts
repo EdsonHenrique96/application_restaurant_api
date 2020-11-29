@@ -6,6 +6,9 @@ describe('GET /restaurants', () => {
   it('get all restaurants', () => {
     return agent(app)
       .get('/restaurants')
-      .expect(200);
+      .expect(200)
+      .then((response) => {
+        expect(response.body.message).toEqual('All restaurants');
+      });
   });
 });
