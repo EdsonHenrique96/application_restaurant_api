@@ -1,4 +1,8 @@
-import express from 'express';
+import express, { NextFunction, Response, Request } from 'express';
+import 'express-async-errors';
+
+import AppErrors from './errors/AppErrors';
+import HttpErrors from './routes/errors/httpErrors';
 
 import routes from './routes';
 
@@ -34,7 +38,22 @@ try {
   process.exit(1);
 }
 
-// use cors
+/**
+ * TODO: app.use(cors());
+ */
+app.use(express.json());
 app.use(routes);
+
+app.use(
+  (error: Error, request: Request, response: Response, _: NextFunction) => {
+    if (error instanceof AppErrors) {
+      return response
+        .status(HttpErrors[error.type])
+        .json({ message: error.message });
+    }
+
+    return response.status(500).json({ message: error.message });
+  },
+);
 
 export default app;

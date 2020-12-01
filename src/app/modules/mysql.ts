@@ -101,7 +101,7 @@ class MysqlClient {
             console.error(error),
           );
 
-          return;
+          throw error;
         }
 
         resolve(results);
