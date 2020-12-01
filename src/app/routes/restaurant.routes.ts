@@ -8,6 +8,7 @@ import RestaurantRepository from '../repositories/RestaurantRespository';
 import CreateRestaurantService from '../services/CreateRestaurantService';
 import GetRestaurantService from '../services/GetRestaurantService';
 import DeleteRestaurantService from '../services/DeleteRestaurantService';
+import UpdateRestaurantService from '../services/UpdateRestaurantService';
 
 const restaurantRoutes = Router();
 
@@ -15,6 +16,7 @@ const restaurantRespository = new RestaurantRepository(mysqlClient);
 const createRestaurantService = new CreateRestaurantService(restaurantRespository);
 const getRestaurantService = new GetRestaurantService(restaurantRespository);
 const deleteRestaurantService = new DeleteRestaurantService(restaurantRespository);
+const updateRestaurantService = new UpdateRestaurantService(restaurantRespository);
 
 restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
   const { id: restaurantId } = req.params;
@@ -25,9 +27,9 @@ restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
 });
 
 restaurantRoutes.get('/restaurant', async (req: Request, res: Response) => {
-  const restaurants = await getRestaurantService.execute();
+  const restaurant = await getRestaurantService.execute();
 
-  return res.json(restaurants);
+  return res.json(restaurant);
 });
 
 restaurantRoutes.post('/restaurant', async (req: Request, res: Response) => {
@@ -51,6 +53,19 @@ restaurantRoutes.delete('/restaurant/:id', async (req: Request, res: Response) =
   const restaurantIdDeleted = await deleteRestaurantService.execute(restaurantId);
 
   return res.json({ id: restaurantIdDeleted });
+});
+
+restaurantRoutes.patch('/restaurant/:id', async (req: Request, res: Response) => {
+  const {
+    photo, name, address, businessHours,
+  } = req.body;
+  const { id } = req.params;
+
+  const restaurantUpdated = await updateRestaurantService.execute({
+    restaurantId: id, photoUri: photo, name, address, businessHours,
+  });
+
+  return res.json(restaurantUpdated);
 });
 
 export default restaurantRoutes;

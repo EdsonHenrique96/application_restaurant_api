@@ -56,7 +56,7 @@ class RestaurantRepository {
   }
 
   async get(restaurantId?: string): Promise<Restaurant[]> {
-    const sqlQuery = `SELECT * FROM restaurant ${restaurantId ? `WHERE id="${restaurantId}"` : ''}`;
+    const sqlQuery = `SELECT * FROM restaurant ${restaurantId ? `WHERE id="${restaurantId}" LIMIT 1` : ''}`;
     try {
       const restaurants: Array<Restaurant> = await this.client
         .runQuery({ sqlQuery });
@@ -78,12 +78,62 @@ class RestaurantRepository {
       });
 
       if (result.affectedRows === 1) return restaurantId;
+
       throw new AppError({
         message: 'Record to be deleted does not exist',
         type: AppErrorTypes.RECORD_NOT_EXISTS,
       });
     } catch (error) {
       console.error(`repository/restaurant::delete: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async update({
+    restaurantId, photoUri, name, address, businessHours,
+  }: {
+    restaurantId: string;
+    photoUri?: string;
+    name?: string;
+    address?: string;
+    businessHours?:string
+  }): Promise<Restaurant> {
+    try {
+      const restaurant = await this.get(restaurantId);
+
+      if (!restaurant) {
+        throw new AppError({
+          message: 'Record to be updated does not exist',
+          type: AppErrorTypes.RECORD_NOT_EXISTS,
+        });
+      }
+
+      /**
+       * FIXME criar função para montar a entidade restaurant
+       */
+      const restaurantForUpdate = {
+        id: restaurant[0].id,
+        photo: photoUri || restaurant[0].photo,
+        name: name || restaurant[0].name,
+        address: address || restaurant[0].address,
+        businessHours: businessHours || restaurant[0].businessHours,
+      };
+
+      const sqlQuery = 'UPDATE restaurant SET photo=?, name=?, address=?, businessHours=? WHERE id=?';
+      await this.client.runQuery({
+        sqlQuery,
+        placeholderValues: [
+          restaurantForUpdate.photo,
+          restaurantForUpdate.name,
+          restaurantForUpdate.address,
+          restaurantForUpdate.businessHours,
+          restaurantForUpdate.id,
+        ],
+      });
+
+      return restaurantForUpdate;
+    } catch (error) {
+      console.error(`repository/restaurant::update: ${error.message}`);
       throw error;
     }
   }
