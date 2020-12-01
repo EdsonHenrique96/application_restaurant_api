@@ -1,6 +1,9 @@
 import {
   Router, Request, Response,
 } from 'express';
+import Multer from 'multer';
+
+import multerConfigs from '../configs/multer';
 
 import { mysqlClient } from '../modules/mysql';
 
@@ -18,6 +21,8 @@ const getRestaurantService = new GetRestaurantService(restaurantRespository);
 const deleteRestaurantService = new DeleteRestaurantService(restaurantRespository);
 const updateRestaurantService = new UpdateRestaurantService(restaurantRespository);
 
+const multer = Multer(multerConfigs);
+
 restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
   const { id: restaurantId } = req.params;
 
@@ -32,21 +37,29 @@ restaurantRoutes.get('/restaurant', async (req: Request, res: Response) => {
   return res.json(restaurant);
 });
 
-restaurantRoutes.post('/restaurant', async (req: Request, res: Response) => {
-  const {
-    photoUri,
-    name,
-    address,
-    businessHours,
-  } = req.body;
+restaurantRoutes.post(
+  '/restaurant',
+  multer.single('photo'),
+  async (req: Request, res: Response) => {
+    const {
+      name,
+      address,
+      businessHours,
+    } = JSON.parse(req.body.data);
+    let photoUri = '';
 
-  const restaurantId = await createRestaurantService
-    .execute({
-      photoUri, name, address, businessHours,
-    });
+    if (req.file) {
+      photoUri = req.file.filename;
+    }
 
-  return res.status(201).json({ id: restaurantId });
-});
+    const restaurantId = await createRestaurantService
+      .execute({
+        photoUri, name, address, businessHours,
+      });
+
+    return res.status(201).json({ id: restaurantId });
+  },
+);
 
 restaurantRoutes.delete('/restaurant/:id', async (req: Request, res: Response) => {
   const { id: restaurantId } = req.params;

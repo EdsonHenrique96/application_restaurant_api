@@ -4,6 +4,8 @@ import 'express-async-errors';
 import AppErrors from './errors/AppErrors';
 import HttpErrors from './routes/errors/httpErrors';
 
+import multerConfigs from './configs/multer';
+
 import routes from './routes';
 
 import { mysqlClient as database } from './modules/mysql';
@@ -42,6 +44,7 @@ try {
  * TODO: app.use(cors());
  */
 app.use(express.json());
+app.use('/img', express.static(multerConfigs.directory));
 app.use(routes);
 
 app.use(
