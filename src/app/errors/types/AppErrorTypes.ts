@@ -1,6 +1,7 @@
 enum AppErrorTypes {
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   INTERNAL_ERROR = 'INTERNAL_ERROR',
+  RECORD_NOT_EXISTS = 'RECORD_NOT_EXISTS',
 }
 
 export default AppErrorTypes;

@@ -57,10 +57,35 @@ class RestaurantRepository {
 
   async get(restaurantId?: string): Promise<Restaurant[]> {
     const sqlQuery = `SELECT * FROM restaurant ${restaurantId ? `WHERE id="${restaurantId}"` : ''}`;
-    const restaurants: Array<Restaurant> = await this.client
-      .runQuery({ sqlQuery });
+    try {
+      const restaurants: Array<Restaurant> = await this.client
+        .runQuery({ sqlQuery });
 
-    return restaurants;
+      return restaurants;
+    } catch (error) {
+      console.error(`repository/restaurant::get: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async delete(restaurantId: string): Promise<string> {
+    const sqlQuery = 'DELETE FROM restaurant WHERE id=?';
+
+    try {
+      const result: { affectedRows: number } = await this.client.runQuery({
+        sqlQuery,
+        placeholderValues: [restaurantId],
+      });
+
+      if (result.affectedRows === 1) return restaurantId;
+      throw new AppError({
+        message: 'Record to be deleted does not exist',
+        type: AppErrorTypes.RECORD_NOT_EXISTS,
+      });
+    } catch (error) {
+      console.error(`repository/restaurant::delete: ${error.message}`);
+      throw error;
+    }
   }
 }
 
