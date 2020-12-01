@@ -4,7 +4,8 @@ import { MysqlClient } from '../modules/mysql';
 import AppError from '../errors/AppErrors';
 import AppErrorTypes from '../errors/types/AppErrorTypes';
 
-interface Restaurant {
+export interface Restaurant {
+  id: string;
   photo: string;
   name: string;
   address: string;
@@ -35,7 +36,7 @@ class RestaurantRepository {
   }): Promise<string> {
     const restaurantId = uuidV4();
 
-    const sqlQuery = 'INSERT INTO restaurant (id, photo, name, address, business_hours) VALUES (?, ?, ?, ?, ?)';
+    const sqlQuery = 'INSERT INTO restaurant (id, photo, name, address, businessHours) VALUES (?, ?, ?, ?, ?)';
     try {
       const result: { affectedRows: number } = await this.client
         .runQuery({
@@ -52,6 +53,14 @@ class RestaurantRepository {
       console.error(`repository/restaurant::create: ${error.message}`);
       throw error;
     }
+  }
+
+  async get(restaurantId?: string): Promise<Restaurant[]> {
+    const sqlQuery = `SELECT * FROM restaurant ${restaurantId ? `WHERE id="${restaurantId}"` : ''}`;
+    const restaurants: Array<Restaurant> = await this.client
+      .runQuery({ sqlQuery });
+
+    return restaurants;
   }
 }
 
