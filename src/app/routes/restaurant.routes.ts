@@ -14,8 +14,8 @@ const restaurantRespository = new RestaurantRepository(mysqlClient);
 const createRestaurantService = new CreateRestaurantService(restaurantRespository);
 const getRestaurantService = new GetRestaurantService(restaurantRespository);
 
-restaurantRoutes.get('/restaurant', async (req: Request, res: Response) => {
-  const { id: restaurantId } = req.query;
+restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
+  const { id: restaurantId } = req.params;
 
   const restaurants = await getRestaurantService.execute(restaurantId?.toString());
 
