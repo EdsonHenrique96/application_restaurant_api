@@ -24,12 +24,12 @@ class RestaurantRepository {
   }
 
   async create({
-    photoUri,
+    photoUri = '',
     name,
     address,
     businessHours,
   }: {
-    photoUri: string;
+    photoUri?: string;
     name: string;
     address: string;
     businessHours: string;

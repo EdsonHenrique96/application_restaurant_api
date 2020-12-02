@@ -39,31 +39,24 @@ restaurantRoutes.get('/restaurants', async (req: Request, res: Response) => {
   return res.json(restaurant);
 });
 
-restaurantRoutes.post(
-  '/restaurants',
-  multer.single('photo'),
-  async (req: Request, res: Response) => {
-    if (!req.body.data) {
-      throw new AppError({
-        message: 'data field is mandatory',
-        type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
-      });
-    }
-
+restaurantRoutes.post('/restaurants',  async (req: Request, res: Response) => {
     const {
       name,
       address,
       businessHours,
-    } = JSON.parse(req.body.data);
-    let photoUri = '';
+    } = req.body;
 
-    if (req.file) {
-      photoUri = req.file.filename;
+    if(!name || !address || !businessHours) {
+      throw new AppError({
+        message: 'name, address and businessHours is mandatory',
+        type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
+      });
     }
 
-    const restaurantId = await createRestaurantService
-      .execute({
-        photoUri, name, address, businessHours,
+    const restaurantId = await createRestaurantService.execute({
+        name,
+        address,
+        businessHours,
       });
 
     return res.status(201).json({ id: restaurantId });
@@ -106,5 +99,23 @@ restaurantRoutes.patch(
 
   return res.json(restaurantUpdated);
 });
+
+restaurantRoutes.patch('/restaurant/:id/avatar', multer.single('photo'),
+  async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    throw new AppError({
+      message: 'photo is mandatory',
+      type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
+    });
+  }
+
+  const restaurantUpdated = await updateRestaurantService.execute({
+    restaurantId: id, photoUri: req.file.filename
+  });
+
+  return res.json(restaurantUpdated);
+})
 
 export default restaurantRoutes;

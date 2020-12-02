@@ -10,7 +10,7 @@ services:
     depends_on: 
       - mysql
     network_mode: host
-    command: sh -c "yarn && yarn dev:server"
+    command: sh -c "sleep 30 && yarn && yarn dev:server"
   mysql:
     image: mysql:5.6
     volumes:
