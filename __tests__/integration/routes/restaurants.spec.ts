@@ -2,10 +2,10 @@ import { agent as request } from 'supertest';
 import { Express } from 'express';
 import { v4 as uuidV4 } from 'uuid';
 
-import { mysqlClient } from '../../src/app/modules/mysql';
-import setupApp from '../../src/app';
+import { mysqlClient } from '../../../src/app/modules/mysql';
+import setupApp from '../../../src/app';
 
-import { Restaurant } from '../../src/app/repositories/RestaurantRespository';
+import { Restaurant } from '../../../src/app/repositories/RestaurantRespository';
 
 const fakeId = 'c806906d-9db4-4f33-99d1-847ff50c5287';
 const photoUri = './anywhere/any.png';
@@ -20,6 +20,13 @@ const clearDB = async () => {
   await mysqlClient
     .runQuery({ sqlQuery: 'DELETE FROM restaurant' });
 };
+
+// workaround to make testing stout cleaner
+console.info = jest.fn();
+console.warn = jest.fn();
+console.debug = jest.fn();
+console.error = jest.fn();
+console.log = jest.fn();
 
 const createManyRestaurants = async (numberOfRecords: number): Promise<string[]> => {
   const { name, address, businessHours } = restaurantMock;

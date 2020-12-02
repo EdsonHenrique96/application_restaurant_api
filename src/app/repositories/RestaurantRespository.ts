@@ -56,7 +56,7 @@ class RestaurantRepository {
   }
 
   async get(restaurantId?: string): Promise<Restaurant[]> {
-    const sqlQuery = `SELECT * FROM restaurant ${restaurantId ? `WHERE id="${restaurantId}" LIMIT 1` : ''}`;
+    const sqlQuery = `SELECT * FROM restaurant${restaurantId ? ` WHERE id="${restaurantId}" LIMIT 1` : ''}`;
     try {
       const restaurants: Array<Restaurant> = await this.client
         .runQuery({ sqlQuery });
