@@ -19,7 +19,7 @@ Run the application and generate your dependencies
  ./scripts/development.sh
 ```
 
-Run unit and integration tests
+Run unit and integration tests, ensure that app is running
 ```sh
  ./scripts/tests.sh
 ```

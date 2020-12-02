@@ -1,0 +1,8 @@
+version: '3.6'
+services:
+  api-tests:
+    image: node:12.13-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    command: sh -c "yarn run test"
