@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import restaurantRoutes from './restaurant.routes';
+import restaurantRoutes from './restaurants.routes';
 
 const routes = Router();
 

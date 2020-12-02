@@ -50,7 +50,7 @@ class RestaurantRepository {
         type: AppErrorTypes.INTERNAL_ERROR,
       });
     } catch (error) {
-      console.error(`repository/restaurant::create: ${error.message}`);
+      console.debug(`repository/restaurant::create: ${error.message}`);
       throw error;
     }
   }
@@ -61,9 +61,13 @@ class RestaurantRepository {
       const restaurants: Array<Restaurant> = await this.client
         .runQuery({ sqlQuery });
 
-      return restaurants;
+      if (restaurants.length >= 1) return restaurants;
+      throw new AppError({
+        message: 'Restaurant does not exist',
+        type: AppErrorTypes.RECORD_NOT_EXISTS,
+      });
     } catch (error) {
-      console.error(`repository/restaurant::get: ${error.message}`);
+      console.debug(`repository/restaurant::get: ${error.message}`);
       throw error;
     }
   }
@@ -84,7 +88,7 @@ class RestaurantRepository {
         type: AppErrorTypes.RECORD_NOT_EXISTS,
       });
     } catch (error) {
-      console.error(`repository/restaurant::delete: ${error.message}`);
+      console.debug(`repository/restaurant::delete: ${error.message}`);
       throw error;
     }
   }
@@ -133,7 +137,7 @@ class RestaurantRepository {
 
       return restaurantForUpdate;
     } catch (error) {
-      console.error(`repository/restaurant::update: ${error.message}`);
+      console.debug(`repository/restaurant::update: ${error.message}`);
       throw error;
     }
   }

@@ -12,6 +12,8 @@ import CreateRestaurantService from '../services/CreateRestaurantService';
 import GetRestaurantService from '../services/GetRestaurantService';
 import DeleteRestaurantService from '../services/DeleteRestaurantService';
 import UpdateRestaurantService from '../services/UpdateRestaurantService';
+import AppError from '../errors/AppErrors';
+import AppErrorTypes from '../errors/types/AppErrorTypes';
 
 const restaurantRoutes = Router();
 
@@ -23,7 +25,7 @@ const updateRestaurantService = new UpdateRestaurantService(restaurantRespositor
 
 const multer = Multer(multerConfigs);
 
-restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
+restaurantRoutes.get('/restaurants/:id', async (req: Request, res: Response) => {
   const { id: restaurantId } = req.params;
 
   const restaurants = await getRestaurantService.execute(restaurantId?.toString());
@@ -31,16 +33,23 @@ restaurantRoutes.get('/restaurant/:id', async (req: Request, res: Response) => {
   return res.json(restaurants);
 });
 
-restaurantRoutes.get('/restaurant', async (req: Request, res: Response) => {
+restaurantRoutes.get('/restaurants', async (req: Request, res: Response) => {
   const restaurant = await getRestaurantService.execute();
 
   return res.json(restaurant);
 });
 
 restaurantRoutes.post(
-  '/restaurant',
+  '/restaurants',
   multer.single('photo'),
   async (req: Request, res: Response) => {
+    if (!req.body.data) {
+      throw new AppError({
+        message: 'data field is mandatory',
+        type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
+      });
+    }
+
     const {
       name,
       address,
@@ -61,18 +70,35 @@ restaurantRoutes.post(
   },
 );
 
-restaurantRoutes.delete('/restaurant/:id', async (req: Request, res: Response) => {
+restaurantRoutes.delete('/restaurants/:id', async (req: Request, res: Response) => {
   const { id: restaurantId } = req.params;
+
+  if(!restaurantId) {
+    throw new AppError({
+      message: 'id is mandatory',
+      type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
+    });
+  }
+
   const restaurantIdDeleted = await deleteRestaurantService.execute(restaurantId);
 
   return res.json({ id: restaurantIdDeleted });
 });
 
-restaurantRoutes.patch('/restaurant/:id', async (req: Request, res: Response) => {
+restaurantRoutes.patch(
+  '/restaurants/:id',
+  async (req: Request, res: Response) => {
   const {
     photo, name, address, businessHours,
   } = req.body;
   const { id } = req.params;
+
+  if(!id) {
+    throw new AppError({
+      message: 'id is mandatory',
+      type: AppErrorTypes.MANDATORY_FIELD_NOT_SENT,
+    });
+  }
 
   const restaurantUpdated = await updateRestaurantService.execute({
     restaurantId: id, photoUri: photo, name, address, businessHours,
