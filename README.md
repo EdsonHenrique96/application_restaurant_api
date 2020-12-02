@@ -18,6 +18,8 @@ Run the application and generate your dependencies
 ```sh
  ./scripts/development.sh
 ```
+**Important**: If the application does not start correctly when you run the 
+script for the first time, stop with ctrl + C and run the script again
 
 Run unit and integration tests, ensure that app is running
 ```sh

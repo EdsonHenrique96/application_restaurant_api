@@ -85,4 +85,16 @@ describe('RestaurantRespository', () => {
       }
     });
   });
+
+  describe('RestaurantRepository::delete', () => {
+    it.todo('unit tests');
+  });
+
+  describe('RestaurantRepository::update', () => {
+    it.todo('unit tests');
+  });
+
+  describe('RestaurantRepository::create', () => {
+    it.todo('unit tests');
+  });
 });
