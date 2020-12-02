@@ -343,7 +343,7 @@ describe('Route /restaurants', () => {
         })
     });
 
-    it('Should return 400, when an non-existent id is sent ', async() => {
+    it('Should return 400, when an non-existent id is sent', async() => {
       const { name, address, businessHours } = restaurantMock;
 
       await mysqlClient.runQuery({
@@ -359,6 +359,29 @@ describe('Route /restaurants', () => {
           expect(response.body.message).toEqual('Record to be deleted does not exist');
         })
     });
+  });
 
+  describe('PATCH /restaurants/:id/avatar', () => {
+    let app: Express;
+    beforeAll(async () => {
+      app = await setupApp();
     });
+
+    afterAll(async () => {
+      await mysqlClient.closePoolConnections();
+    });
+
+    it('Should return 422, when an photo field does not sent', async() => {
+      return request(app)
+        .patch(`/restaurants/${fakeId}/avatar`)
+        .set('Content-Type', 'multipart/form-data; boundary=something')
+        .expect(422)
+        .then(async(response) => {
+          expect(response.body.message).toEqual('photo is mandatory');
+        })
+    });
+
+    it.todo('Should return 422, when an non-existent id is sent');
+    it.todo('Should be able to update a restaurant photo');
+  });
 });

@@ -100,7 +100,7 @@ restaurantRoutes.patch(
   return res.json(restaurantUpdated);
 });
 
-restaurantRoutes.patch('/restaurant/:id/avatar', multer.single('photo'),
+restaurantRoutes.patch('/restaurants/:id/avatar', multer.single('photo'),
   async (req: Request, res: Response) => {
   const { id } = req.params;
 
